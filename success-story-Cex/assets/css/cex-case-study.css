@@ -1192,3 +1192,17 @@ html.js .dm-case .dm-shot .dm-phone { opacity: 1; transform: none; transition: n
 .dm-case .dm-launch__evidence .dm-browser img { aspect-ratio: 1600 / 660; object-fit: contain; object-position: center; background: #fff; }
 .dm-case .dm-launch__evidence figcaption { margin-top: 10px; font-family: var(--mono); font-weight: 500; font-size: .74rem; line-height: 1.6; color: var(--on-dark-mute); }
 html.js .dm-case .dm-launch__evidence .dm-browser { opacity: 1; transform: none; transition: none; }
+
+/* Focus-pages grid: page-1 cells in the kit's orange, page-2 cells in a lighter tint, plus a two-item legend */
+.dm-case .dm-chart .dm-chart__cell--p2 { background: rgba(251, 121, 0, .38); }
+html.js .dm-case .dm-chart .dm-chart__cell--p2 { transition: transform .22s var(--dmc-ease), opacity .22s ease; transition-delay: calc(var(--i, 0) * var(--dmc-stagger)); }
+html.js .dm-case .dm-chart:not(.is-in) .dm-chart__cell--p2 { transform: scale(.3); opacity: 0; }
+.dm-case .dm-chart .dm-chart__legend { margin-top: 12px; font-family: var(--mono); font-weight: 500; font-size: .68rem; letter-spacing: .06em; color: var(--on-dark-mute); }
+.dm-case .dm-chart .dm-chart__legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.dm-case .dm-chart .dm-chart__legend-p1::before { background: var(--orange); }
+.dm-case .dm-chart .dm-chart__legend-p2::before { background: rgba(251, 121, 0, .38); }
+@media (prefers-reduced-motion: reduce) { html.js .dm-case .dm-chart:not(.is-in) .dm-chart__cell--p2 { transform: none; opacity: 1; transition: none; } }
+
+/* Show the requested launch-period detail of the original Search Console image. */
+.dm-case .dm-launch__chart-crop { position: relative; width: 100%; aspect-ratio: 510 / 445; overflow: hidden; background: #fff; }
+.dm-case .dm-launch__evidence .dm-launch__chart-crop img { position: absolute; left: -213.72549%; top: -48.31461%; width: 313.72549%; max-width: none; height: auto; aspect-ratio: 1600 / 660; object-fit: contain; }
