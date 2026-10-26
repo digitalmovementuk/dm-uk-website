@@ -147,6 +147,32 @@ select.city,select.fsel{appearance:none;-webkit-appearance:none;font:inherit;fon
 #master-wrap.flat{--th-top:calc(var(--bar-h) - 1px)}
 #master-wrap:not(.flat){max-height:calc(100dvh - var(--bar-h) - 12px);border-top-left-radius:0;border-top-right-radius:0;border-top:0}
 .scroll.narrow{display:inline-block}
+/* Page-scroll mode (set by app.js on every table that is wider than its box): the page scrolls down, not the table, so the column header can stay at the top
+   of the screen. A scroll box cannot stick to the page, so app.js adds a header copy (.hclone) that sticks to the top and follows the sideways scroll, and on
+   desktop a scrollbar strip (.hbar) that sticks to the bottom of the screen. Without JavaScript the old scroll box (max-height above) stays. */
+.scroll.ps,#master-wrap.ps{max-height:none;overflow-x:auto;overflow-y:hidden}
+.stk{position:relative}
+.stk:not(.on)>.hanchor,.stk:not(.on)>.hbar{display:none}
+.hanchor{position:sticky;top:var(--stk-top,0px);height:0;z-index:45;pointer-events:none}
+.stk-master{--stk-top:calc(var(--bar-h) - 1px)}
+.hclone{position:absolute;left:0;top:0;box-sizing:border-box;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;background:var(--card);border:1px solid var(--edge-2);border-bottom:0;border-radius:var(--r) var(--r) 0 0;pointer-events:none;-webkit-user-select:none;user-select:none}
+.stk.stuck .hclone{pointer-events:auto}
+.hclone::-webkit-scrollbar{display:none}
+.hclone table{margin:0;table-layout:fixed;width:auto}
+.stk:has(>.scroll thead button:focus-visible)>.hanchor{visibility:hidden}   /* keyboard focus on a real heading: show the real one, not its copy */
+/* sideways scrollbar strip: stuck to the bottom of the screen while the table is in view, always visible on desktop (a styled scrollbar is never an overlay) */
+.hbar{display:none}
+@media (hover:hover) and (pointer:fine){
+  .scroll.ps,#master-wrap.ps{scrollbar-width:none}
+  .scroll.ps::-webkit-scrollbar{display:none}
+  .stk.on>.hbar{display:block;position:sticky;bottom:0;z-index:44;box-sizing:border-box;height:16px;margin-top:-1px;overflow-x:scroll;overflow-y:hidden;background:var(--card);border:1px solid var(--edge-2);border-top:0;border-radius:0 0 var(--r) var(--r);box-shadow:0 -1px 0 var(--edge-2);overscroll-behavior-x:contain}
+  .hbar>div{height:1px}
+  .hbar::-webkit-scrollbar{height:16px;background:var(--edge)}
+  .hbar::-webkit-scrollbar-track{background:var(--edge);border-radius:0 0 var(--r) var(--r)}
+  .hbar::-webkit-scrollbar-thumb{background:var(--ink-2);border:3px solid var(--edge);border-radius:10px;min-width:48px}
+  .hbar::-webkit-scrollbar-thumb:hover{background:var(--ink)}
+  @supports not selector(::-webkit-scrollbar){.hbar{height:auto;scrollbar-width:auto;scrollbar-color:var(--ink-2) var(--edge)}}
+}
 table{border-collapse:separate;border-spacing:0;width:100%;font-size:1rem;line-height:1.35}
 th,td{padding:7px 10px;text-align:left;vertical-align:middle;border-top:1px solid var(--edge)}
 thead th{position:sticky;top:var(--th-top,0px);z-index:30;background:var(--card);border-top:0;box-shadow:inset 0 -2px 0 var(--ink);font-weight:700;white-space:nowrap;padding:0 10px;height:46px;vertical-align:middle}
@@ -179,12 +205,12 @@ td.gscc .gtxt{display:block;white-space:nowrap;margin-top:1px;font-size:.875rem;
 td.gscc .ga4{display:block;white-space:nowrap;font-size:.8125rem;color:var(--mute);line-height:1.3}
 td.win,td.wave{text-align:left}
 td.pg{min-width:5.5rem}
-#master-table th,#master-table td{padding-left:8px;padding-right:8px}
+:is(#master-table,table[data-clone=master]) th,#master-table td{padding-left:8px;padding-right:8px}
 #master-table td{vertical-align:top;padding-top:4px;padding-bottom:4px}
-#master-table thead th{white-space:normal;line-height:1.2}
-#master-table .sortbtn{white-space:normal;text-align:left;padding:0}
-#master-table th.num .sortbtn{text-align:right}
-#master-table th.num{text-align:right}
+:is(#master-table,table[data-clone=master]) thead th{white-space:normal;line-height:1.2}
+:is(#master-table,table[data-clone=master]) .sortbtn{white-space:normal;text-align:left;padding:0}
+:is(#master-table,table[data-clone=master]) th.num .sortbtn{text-align:right}
+:is(#master-table,table[data-clone=master]) th.num{text-align:right}
 #master-table td.t10{white-space:normal}
 #master-table td.t10 .ag{display:block;margin:2px 0 0}
 th.nosort{font-weight:700}
@@ -223,7 +249,7 @@ tr.drop>td.kw{font-weight:500}
 .scroll:not(.flat) #master-table tr.mrow>td.fk{background:var(--martey)}
 .scroll:not(.flat) #master-table tr.rb-a>td.fk{box-shadow:inset 6px 0 0 var(--ink),1px 0 0 var(--edge-2)}
 .scroll:not(.flat) #master-table tr.rb-b>td.fk{box-shadow:inset 6px 0 0 var(--band-b),1px 0 0 var(--edge-2)}
-.scroll:not(.flat) #master-table thead th:first-child{left:0;z-index:40}
+.scroll:not(.flat) #master-table thead th:first-child,.hclone table[data-clone=master] thead th:first-child{left:0;z-index:40}
 
 /* Search Console marker, tier pills, band tags, win, wave */
 .gscmark{display:inline-block;flex:0 0 auto;padding:0 6px;border-radius:5px;background:var(--ink);color:#fff;font-family:var(--display);font-weight:800;font-size:.6875rem;letter-spacing:.04em;line-height:1.55;vertical-align:1px}
@@ -385,6 +411,7 @@ footer li{margin:0 0 4px}
   .fbar,.reset{display:none!important}
   .scroll,.scroll.flat,#master-wrap:not(.flat){overflow:visible!important;max-height:none!important;border:0}
   thead th{position:static!important}
+  .hanchor,.hbar{display:none!important}
   .scroll:not(.flat) #master-table td.fk{position:static}
   table{font-size:9pt}
   th,td{padding:4px 6px}
@@ -469,24 +496,114 @@ How-to and other questions: 3,147" aria-label="12,740 keywords, top reasons keyw
   var mwrap = document.getElementById('master-wrap');
   var hintScroll = document.querySelector('.hint-scroll');
 
-  /* ---- sticky offsets and scroll containers --------------------------------------------------------
-     A table that fits its box is left flat, so its header sticks to the page. A table that does not fit
-     becomes its own scroll box (header and keyword column stick inside it). */
+  /* ---- sticky column headings ---------------------------------------------------------------------
+     A table that fits its box stays flat: its heading row sticks to the page by itself.
+     A table that is wider than its box has to scroll sideways, and a scroll box cannot stick to the page. So the box
+     scrolls sideways only (class ps) and the page scrolls down. Two helpers keep the table usable:
+       .hclone  a copy of the heading row that sticks to the top (below the filter bar on the master list),
+                scrolled in step with the table, so every heading stays above its column;
+       .hbar    on desktop, a scrollbar strip stuck to the bottom of the screen, scrolled in step with the table,
+                so the sideways scrollbar is always in reach and never an overlay scrollbar.
+     On touch screens the table and the heading copy both scroll by finger, as before. */
   function setBar() {
     if (bar) root.style.setProperty('--bar-h', Math.ceil(bar.getBoundingClientRect().height) + 'px');
   }
+  function mk(cls) { var e = document.createElement('div'); e.className = cls; return e; }
+  function link(a, b) {   // keep b.scrollLeft equal to a.scrollLeft (a change of less than half a pixel is ignored, so the two never chase each other)
+    a.addEventListener('scroll', function () { if (Math.abs(b.scrollLeft - a.scrollLeft) >= 0.5) b.scrollLeft = a.scrollLeft; }, { passive: true });
+  }
+  function ensureStick(wrap) {
+    if (wrap._stk) return wrap._stk;
+    var stk = mk('stk'), anchor = mk('hanchor'), clone = mk('hclone'), hbar = mk('hbar'), spacer = document.createElement('div');
+    if (wrap.id === 'master-wrap') { stk.id = 'master-stk'; stk.classList.add('stk-master'); clone.id = 'master-hclone'; hbar.id = 'master-hbar'; }
+    anchor.setAttribute('aria-hidden', 'true'); hbar.setAttribute('aria-hidden', 'true'); hbar.setAttribute('tabindex', '-1');
+    anchor.appendChild(clone); hbar.appendChild(spacer);
+    wrap.parentNode.insertBefore(stk, wrap);
+    stk.appendChild(anchor); stk.appendChild(wrap); stk.appendChild(hbar);
+    var rec = stk._rec = wrap._stk = { wrap: wrap, stk: stk, anchor: anchor, clone: clone, hbar: hbar, spacer: spacer, table: wrap.querySelector('table'), ct: null };
+    link(wrap, clone); link(clone, wrap); link(wrap, hbar); link(hbar, wrap);
+    clone.addEventListener('click', function (e) {   // a click on a heading copy is a click on the real heading
+      var b = e.target.closest ? e.target.closest('button') : null, th = b && b.closest('th');
+      if (!th) return;
+      var i = Array.prototype.indexOf.call(th.parentNode.cells, th), real = rec.table.tHead.rows[0].cells[i];
+      var rb = real && real.querySelector('button');
+      if (rb) rb.click();
+    });
+    return rec;
+  }
+  function buildClone(rec) {
+    var t = rec.table, ct = document.createElement('table'), head = t.tHead.cloneNode(true), cg = document.createElement('colgroup');
+    if (t.id === 'master-table') ct.setAttribute('data-clone', 'master');
+    ct.setAttribute('data-table', t.getAttribute('data-table') || '');
+    Array.prototype.forEach.call(head.querySelectorAll('[id]'), function (n) { n.removeAttribute('id'); });
+    Array.prototype.forEach.call(head.querySelectorAll('button'), function (b) { b.setAttribute('tabindex', '-1'); });
+    for (var i = 0; i < head.rows[0].cells.length; i++) cg.appendChild(document.createElement('col'));
+    ct.appendChild(cg); ct.appendChild(head); rec.clone.appendChild(ct);
+    rec.ct = ct;
+  }
+  function syncStick(rec) {   // widths, sort marks and box shape of the copy; width of the strip's track
+    var wrap = rec.wrap;
+    if (!rec.stk.classList.contains('on') || !wrap.getClientRects().length) return;
+    if (!rec.ct) buildClone(rec);
+    var real = rec.table.tHead.rows[0].cells, cth = rec.ct.tHead.rows[0].cells, cols = rec.ct.firstChild.children, sum = 0, cs = getComputedStyle(wrap);
+    for (var i = 0; i < real.length; i++) {
+      var w = real[i].getBoundingClientRect().width;
+      cols[i].style.width = w + 'px'; cth[i].style.width = w + 'px'; sum += w;
+      var s = real[i].getAttribute('aria-sort');
+      if (s === null) cth[i].removeAttribute('aria-sort'); else if (cth[i].getAttribute('aria-sort') !== s) cth[i].setAttribute('aria-sort', s);
+    }
+    rec.ct.style.width = sum + 'px';
+    var c = rec.clone.style;
+    c.width = wrap.offsetWidth + 'px';
+    c.borderTopWidth = cs.borderTopWidth; c.borderTopLeftRadius = cs.borderTopLeftRadius; c.borderTopRightRadius = cs.borderTopRightRadius;
+    rec.hbar.style.width = wrap.offsetWidth + 'px';
+    rec.spacer.style.width = wrap.scrollWidth + 'px';
+    if (rec.clone.scrollLeft !== wrap.scrollLeft) rec.clone.scrollLeft = wrap.scrollLeft;
+    if (rec.hbar.scrollLeft !== wrap.scrollLeft) rec.hbar.scrollLeft = wrap.scrollLeft;
+  }
+  function syncAllSticks() {
+    var all = document.querySelectorAll('.scroll');
+    for (var i = 0; i < all.length; i++) if (all[i]._stk) syncStick(all[i]._stk);
+    updateStuck();
+  }
+  /* The heading copy sits exactly over the real heading row until the table's top scrolls past the sticky line. Only while it is
+     stuck (class 'stuck') does it take clicks; before that the real headings take them, so nothing is ever covered by a copy. */
+  var stuckRaf = 0;
+  function updateStuck() {
+    var all = document.querySelectorAll('.stk.on'), flags = [], i;
+    for (i = 0; i < all.length; i++) {
+      var r = all[i]._rec;
+      flags.push(r.anchor.getBoundingClientRect().top - r.wrap.getBoundingClientRect().top > 0.5);
+    }
+    for (i = 0; i < all.length; i++) if (all[i].classList.contains('stuck') !== flags[i]) all[i].classList.toggle('stuck', flags[i]);
+  }
+  window.addEventListener('scroll', function () {
+    if (stuckRaf) return;
+    stuckRaf = requestAnimationFrame(function () { stuckRaf = 0; updateStuck(); });
+  }, { passive: true });
   function fit(wrap) {
     var t = wrap.querySelector('table');
-    if (!t || !wrap.getClientRects().length) return;
-    wrap.classList.add('flat');
+    if (!t) return;
+    if (!wrap.classList.contains('ps') && !wrap.classList.contains('flat')) wrap.classList.add('ps');   // from the start, so a section that is opened later never flashes the old scroll box
+    if (!wrap.getClientRects().length) return;
+    if (!wrap.classList.contains('ps')) { wrap.classList.remove('flat'); wrap.classList.add('ps'); }   // measure as a sideways scroller: no vertical scrollbar takes width, so the answer is the same each time
     var over = t.offsetWidth > wrap.clientWidth + 1;
-    if (over) wrap.classList.remove('flat');
-    if (over) wrap.setAttribute('tabindex', '0'); else wrap.removeAttribute('tabindex');
+    if (over) {
+      wrap.setAttribute('tabindex', '0');
+      var rec = ensureStick(wrap);
+      rec.stk.classList.add('on');
+      syncStick(rec);
+    } else {
+      wrap.classList.remove('ps'); wrap.classList.add('flat');
+      wrap.removeAttribute('tabindex');
+      if (wrap._stk) wrap._stk.stk.classList.remove('on');
+    }
   }
   function fitAll() {
     var all = document.querySelectorAll('.scroll');
     for (var i = 0; i < all.length; i++) fit(all[i]);
     setBar();
+    updateStuck();
     if (hintScroll && mwrap) hintScroll.hidden = mwrap.classList.contains('flat');
   }
   var raf = 0;
@@ -549,7 +666,10 @@ How-to and other questions: 3,147" aria-label="12,740 keywords, top reasons keyw
   document.addEventListener('mouseover', function (e) { var t = tipTarget(e); if (t && t !== tipFor) showTip(t); else if (!t && tipFor) hideTip(); });
   document.addEventListener('click', function (e) { var t = tipTarget(e); if (t) { if (tipFor === t && e.pointerType !== 'mouse') hideTip(); else showTip(t); } else if (tipFor) hideTip(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hideTip(); });
-  window.addEventListener('scroll', function () { if (tipFor) hideTip(); }, true);
+  window.addEventListener('scroll', function (e) {   // any scroll closes the tooltip, except the echo of a table scroll in its heading copy or scrollbar strip
+    var c = e.target && e.target.classList;
+    if (tipFor && !(c && (c.contains('hclone') || c.contains('hbar')))) hideTip();
+  }, true);
 
   document.addEventListener('click', function (e) {
     var b = e.target.closest ? e.target.closest('.morebtn') : null;
@@ -623,6 +743,7 @@ How-to and other questions: 3,147" aria-label="12,740 keywords, top reasons keyw
     });
     if (announce) live.textContent = announce + '. ' + msg;
     setBar();
+    syncAllSticks();
     window.__renderMs = performance.now() - t0;
   }
 
